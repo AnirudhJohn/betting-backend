@@ -10,49 +10,17 @@ const UserSchema = new Schema({
     password: {
         type: String,
         required: true
-    }
-
-}, { timestamps: true })
-
-const CreatorSchema = new Schema({
-    username: {
-        type: String,
-        required: true,
-        unque: true
-    },
-    password: {
-        type: String,
-        required: true
     },
     wallet: Number,
-    childAdmin: []
-}, { timestamps: true })
-
-const AdminSchema = new Schema({
-    username: {
+    role: {
         type: String,
         required: true,
-        unque: true
     },
-    password: {
-        type: String,
-        required: true
-    },
-    wallet: Number,
-    parent: String,
-    childSMDL: []
+    child: [String],
+    parent: String
 }, { timestamps: true })
 
+const Users = mongoose.model('all-users', UserSchema)
 
 
-
-
-
-const Watcher = mongoose.model('watcher', UserSchema)
-const Creator = mongoose.model('creator', CreatorSchema)
-const Admin = mongoose.model('admin', AdminSchema)
-module.exports = {
-    Watcher: Watcher,
-    Creator: Creator,
-    Admin: Admin
-}
+module.exports = Users

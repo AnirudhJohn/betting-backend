@@ -1,40 +1,91 @@
-const { Watcher, Creator, Admin } = require('../models/User')
+const Users = require('../models/User')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { models } = require('mongoose')
 const jwt_decode = require('jwt-decode')
 
+
+// register user function 
+// requires req.body.username, req.body.password, req.headers.authorization
 const register = (req, res, next) => {
+
+    // encrypt the password
     bcrypt.hash(req.body.password, 10, (err, hashedpassword) => {
         if (err) {
             return res.json({
                 error: err
             })
         }
-        let user = new Watcher({
-            username: req.body.username,
-            password: hashedpassword
+        // authorization token 
+        token = req.headers['authorization'].split(' ')[1]
+
+
+        // token verification 
+        jwt.verify(token, process.env.JWT_SECRET, async(err, authData) => {
+            if (err) {
+                return res.sendStatus(403)
+            } else {
+
+                // Retrieve data from decoded token  
+                const prole = authData['data']['role']
+                const papa = authData['data']['name']
+
+                // Figure out who called the function, and what role to provide
+                let crole = newRole(prole)
+
+                // Create new User
+                let user = new Users({
+                    username: req.body.username,
+                    password: hashedpassword,
+                    wallet: 0,
+                    role: crole,
+                    parent: papa
+                })
+
+                // update the parent user's child array
+                Users.findOne({ username: papa }, (err, data) => {
+                    console.log(data)
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        data.child.push(req.body.username)
+                            // Save Changes
+                        data.save();
+                    }
+                })
+
+                // Save newly created User
+                user.save()
+                    .then(user => {
+                        return res.json({
+                            message: 'User added Succesfully...',
+                        })
+                    })
+                    .catch(error => {
+                        return res.json({
+                            message: 'An error occured! ',
+                            error
+                        })
+                    })
+
+            }
         })
-        user.save()
-            .then(user => {
-                return res.json({
-                    message: 'User added Succesfully...'
-                })
-            })
-            .catch(error => {
-                return res.json({
-                    message: 'An error occured! '
-                })
-            })
     })
 }
 
+// Login a User
 const login = (req, res, next) => {
+
+    // Get variables from request 
     let username = req.body.username;
     let password = req.body.password;
-    Creator.findOne({ username: username })
+
+    // Find user in database 
+    Users.findOne({ username: username })
         .then(user => {
             if (user) {
+
+                // Compare hases 
                 bcrypt.compare(password, user.password, (err, result) => {
                     if (err) {
                         return res.json({
@@ -42,7 +93,16 @@ const login = (req, res, next) => {
                         })
                     }
                     if (result) {
-                        let token = jwt.sign({ name: user.name }, process.env.JWT_SECRET, { expiresIn: '1h' })
+                        // Create token data with username and role
+                        let data = {
+                            name: user.username,
+                            role: user.role
+                        }
+
+                        // Create token 
+                        let token = jwt.sign({ data }, process.env.JWT_SECRET, { expiresIn: '1h' })
+
+                        // Send Response
                         return res.json({
                             message: 'Login Successfull ..',
                             token: token
@@ -61,7 +121,24 @@ const login = (req, res, next) => {
         })
 }
 
+//Function to figure out Which user called the function and what role to provide to the child user 
 
+let newRole = function(prole) {
+    switch (prole) {
+        case 'creator':
+            return 'admin';
+        case 'admin':
+            return 'supermaster';
+        case 'supermaster':
+            return 'submaster';
+        case 'submaster':
+            return 'master';
+        case 'master':
+            return 'user';
+        default:
+            return 'user';
+    }
+}
 
 
 module.exports = {
