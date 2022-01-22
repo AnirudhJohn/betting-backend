@@ -6,6 +6,7 @@ const morgan = require('morgan')
 
 
 const authRoute = require('./routes/auth')
+const usercreator = require('./routes/create')
 
 mongoose.connect('mongodb://localhost:27017/authdb', { useNewUrlParser: true, useUniFiedTopology: true })
 
@@ -32,3 +33,5 @@ app.listen(PORT, () => {
 })
 
 app.use('/api', authRoute)
+app.use('/create', usercreator)
+app.get('/', (req, res) => res.redirect('/api'))

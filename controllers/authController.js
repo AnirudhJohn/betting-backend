@@ -1,17 +1,17 @@
-const User = require('../models/User')
+const { Watcher, Creator, Admin } = require('../models/User')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { models } = require('mongoose')
+const jwt_decode = require('jwt-decode')
 
 const register = (req, res, next) => {
     bcrypt.hash(req.body.password, 10, (err, hashedpassword) => {
         if (err) {
             return res.json({
-                error: err,
-                message: req.body
+                error: err
             })
         }
-        let user = new User({
+        let user = new Watcher({
             username: req.body.username,
             password: hashedpassword
         })
@@ -32,7 +32,7 @@ const register = (req, res, next) => {
 const login = (req, res, next) => {
     let username = req.body.username;
     let password = req.body.password;
-    User.findOne({ username: username })
+    Creator.findOne({ username: username })
         .then(user => {
             if (user) {
                 bcrypt.compare(password, user.password, (err, result) => {
