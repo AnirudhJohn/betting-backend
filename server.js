@@ -40,57 +40,61 @@ app.listen(PORT, () => {
 // Routes
 app.use('/api', authRoute)
 app.use('/api/data', dataRoute)
+
+// Sample 
 app.get('/', (req, res) => res.json({
     Message: 'working'
 }))
 
 
 // just for checking and testing purposes
+
+
 // headers authentication, body : to, amount
-app.post('/', (req, res) => {
-    if (!req.headers['authorization']) {
-        return res.sendStatus(403)
-    } else {
-        let token = req.headers['authorization'].split(' ')[1]
-        jwt.verify(token, process.env.JWT_SECRET, async(err, authData) => {
-            if (err) {
-                return res.json({
-                    message: 'An error Occurred',
-                    err
-                })
-            } else {
-                req.headers.username = authData['data']['name']
-                Users.findOne({ username: req.headers.username }, (err, sdata) => {
-                    if (err) {
-                        return res.json({
-                            messgae: 'An error Occured',
-                            err
-                        })
-                    } else {
+// app.post('/', (req, res) => {
+//     if (!req.headers['authorization']) {
+//         return res.sendStatus(403)
+//     } else {
+//         let token = req.headers['authorization'].split(' ')[1]
+//         jwt.verify(token, process.env.JWT_SECRET, async(err, authData) => {
+//             if (err) {
+//                 return res.json({
+//                     message: 'An error Occurred',
+//                     err
+//                 })
+//             } else {
+//                 req.headers.username = authData['data']['name']
+//                 Users.findOne({ username: req.headers.username }, (err, sdata) => {
+//                     if (err) {
+//                         return res.json({
+//                             messgae: 'An error Occured',
+//                             err
+//                         })
+//                     } else {
 
-                        Users.findOne({ username: req.body.to }, (err, rdata) => {
-                            if (err) {
-                                return res.json({
-                                    messgae: 'An error Occured',
-                                    err
-                                })
-                            } else {
-                                const check = (n) => {
-                                    return n === req.body.to
-                                }
-                                if (req.body.to === sdata['child'].find(check) || rdata['username'] === sdata['parent'])
+//                         Users.findOne({ username: req.body.to }, (err, rdata) => {
+//                             if (err) {
+//                                 return res.json({
+//                                     messgae: 'An error Occured',
+//                                     err
+//                                 })
+//                             } else {
+//                                 const check = (n) => {
+//                                     return n === req.body.to
+//                                 }
+//                                 if (req.body.to === sdata['child'].find(check) || rdata['username'] === sdata['parent'])
 
-                                    return res.json({
-                                    message: 'Amount Sent !!',
-                                    amount: req.body.amount,
-                                    sender: req.headers.username,
-                                    reciever: req.body.to
-                                })
-                            }
-                        })
-                    }
-                })
-            }
-        })
-    }
-})
+//                                     return res.json({
+//                                     message: 'Amount Sent !!',
+//                                     amount: req.body.amount,
+//                                     sender: req.headers.username,
+//                                     reciever: req.body.to
+//                                 })
+//                             }
+//                         })
+//                     }
+//                 })
+//             }
+//         })
+//     }
+// })

@@ -1,4 +1,5 @@
 const Users = require('../models/User')
+const Transactions = require('../models/transaction')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { models } = require('mongoose')
@@ -25,7 +26,7 @@ const getWallet = (req, res, next) => {
 
 // It additionally requires 'to' parameter to whom send the money
 const sendMoney = (req, res, next) => {
-
+    console.log(req.headers.username)
     Users.findOne({ username: req.headers.username }, (err, sdata) => {
         if (err) {
             return res.json({
@@ -54,12 +55,20 @@ const sendMoney = (req, res, next) => {
                         rdata.wallet = parseInt(rdata.wallet) + parseInt(req.body.amount);
                         sdata.wallet = parseInt(sdata.wallet) - parseInt(req.body.amount);
                         rdata.save();
-                        sdata.save()
+                        sdata.save();
+                        let transaction = new Transactions({
+                            sender: sdata['username'],
+                            receiver: rdata['username'],
+                            amount: req.body.amount,
+                        })
+
+                        transaction.save();
                         return res.json({
                             message: 'Amount Sent !!',
                             amount: req.body.amount,
                             sender: req.headers.username,
-                            reciever: req.body.to
+                            reciever: req.body.to,
+                            transaction
                         })
                     } else {
                         return res.json({
@@ -76,7 +85,20 @@ const sendMoney = (req, res, next) => {
 
 }
 
+const getChild = (req, res, next) => {
+
+    Users.findOne({ username: req.headers.username }, (err, data) => {
+        children = data['child']
+        console.log(children)
+        return res.json({
+            children
+        })
+    })
+}
+
+
 module.exports = {
     getWallet,
-    sendMoney
+    sendMoney,
+    getChild
 }

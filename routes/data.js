@@ -23,7 +23,12 @@ const isAuthenticated = (req, res, next) => {
     }
 }
 
+// GET ROUTES
 router.get('/wallet', isAuthenticated, DataController.getWallet)
+router.get('/getchild', isAuthenticated, DataController.getChild)
+
+// POST ROUTES
 router.post('/sendmoney', isAuthenticated, DataController.sendMoney)
+
 
 module.exports = router
