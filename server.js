@@ -46,26 +46,51 @@ app.get('/', (req, res) => res.json({
 
 
 // just for checking and testing purposes
-// app.post('/', (req, res) => {
-//     let token = req.headers['authorization'].split(' ')[1]
-//     jwt.verify(token, process.env.JWT_SECRET, (err, authData) => {
-//         if (err) {
-//             res.sendStatus(403)
-//         } else {
+// headers authentication, body : to, amount
+app.post('/', (req, res) => {
+    if (!req.headers['authorization']) {
+        return res.sendStatus(403)
+    } else {
+        let token = req.headers['authorization'].split(' ')[1]
+        jwt.verify(token, process.env.JWT_SECRET, async(err, authData) => {
+            if (err) {
+                return res.json({
+                    message: 'An error Occurred',
+                    err
+                })
+            } else {
+                req.headers.username = authData['data']['name']
+                Users.findOne({ username: req.headers.username }, (err, sdata) => {
+                    if (err) {
+                        return res.json({
+                            messgae: 'An error Occured',
+                            err
+                        })
+                    } else {
 
-//             Users.findOne({ username: authData['data']['name'] }, (err, data) => {
-//                 if (err) {
-//                     console.log(err)
-//                 } else {
-//                     if (req.body.name) {
-//                         data.child.push("alex")
-//                     }
-//                     data.save();
-//                     res.json({
-//                         message: data
-//                     })
-//                 }
-//             })
-//         }
-//     })
-// })
+                        Users.findOne({ username: req.body.to }, (err, rdata) => {
+                            if (err) {
+                                return res.json({
+                                    messgae: 'An error Occured',
+                                    err
+                                })
+                            } else {
+                                const check = (n) => {
+                                    return n === req.body.to
+                                }
+                                if (req.body.to === sdata['child'].find(check) || rdata['username'] === sdata['parent'])
+
+                                    return res.json({
+                                    message: 'Amount Sent !!',
+                                    amount: req.body.amount,
+                                    sender: req.headers.username,
+                                    reciever: req.body.to
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        })
+    }
+})

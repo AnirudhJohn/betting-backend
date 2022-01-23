@@ -24,5 +24,6 @@ const isAuthenticated = (req, res, next) => {
 }
 
 router.get('/wallet', isAuthenticated, DataController.getWallet)
+router.post('/sendmoney', isAuthenticated, DataController.sendMoney)
 
 module.exports = router
