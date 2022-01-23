@@ -42,10 +42,22 @@ app.use('/api', authRoute)
 app.use('/api/data', dataRoute)
 
 // Sample 
-app.get('/', (req, res) => res.json({
-    Message: 'working'
-}))
+app.get('/api/one', (req, res) => res.redirect(process.env.API_ONE))
+app.get('/api/two', (req, res) => res.redirect(process.env.API_TWO))
+app.get('/api/three', (req, res) => res.redirect(process.env.API_THREE))
+app.get('/api/four', (req, res) => res.redirect(process.env.API_FOUR))
+app.get('/api/five', (req, res) => res.redirect(process.env.API_FIVE))
 
+
+// API 1 : All Country List
+
+// API 2 : All Leagues Name List
+
+// API 3 : All Match Fixtures List
+
+// API 4 : Livescore 
+
+// API 5 : Odds
 
 // just for checking and testing purposes
 
