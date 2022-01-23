@@ -74,6 +74,7 @@ const register = (req, res, next) => {
 }
 
 // Login a User
+// It requires req.body.username, req.body.password
 const login = (req, res, next) => {
 
     // Get variables from request 

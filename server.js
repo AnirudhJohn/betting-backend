@@ -6,8 +6,11 @@ const jwt = require('jsonwebtoken')
 
 // Importing local paths
 const authRoute = require('./routes/auth')
+const dataRoute = require('./routes/data')
 const { token } = require('morgan')
 const Users = require('./models/User')
+
+
 
 // Database Stuff
 mongoose.connect('mongodb://localhost:27017/authdb', { useNewUrlParser: true, useUniFiedTopology: true })
@@ -36,27 +39,33 @@ app.listen(PORT, () => {
 
 // Routes
 app.use('/api', authRoute)
-app.get('/', (req, res) => res.redirect('/api'))
-app.post('/', (req, res) => {
-    let token = req.headers['authorization'].split(' ')[1]
-    jwt.verify(token, process.env.JWT_SECRET, (err, authData) => {
-        if (err) {
-            res.sendStatus(403)
-        } else {
+app.use('/api/data', dataRoute)
+app.get('/', (req, res) => res.json({
+    Message: 'working'
+}))
 
-            Users.findOne({ username: authData['data']['name'] }, (err, data) => {
-                if (err) {
-                    console.log(err)
-                } else {
-                    if (req.body.name) {
-                        data.child.push("alex")
-                    }
-                    data.save();
-                    res.json({
-                        message: data
-                    })
-                }
-            })
-        }
-    })
-})
+
+// just for checking and testing purposes
+// app.post('/', (req, res) => {
+//     let token = req.headers['authorization'].split(' ')[1]
+//     jwt.verify(token, process.env.JWT_SECRET, (err, authData) => {
+//         if (err) {
+//             res.sendStatus(403)
+//         } else {
+
+//             Users.findOne({ username: authData['data']['name'] }, (err, data) => {
+//                 if (err) {
+//                     console.log(err)
+//                 } else {
+//                     if (req.body.name) {
+//                         data.child.push("alex")
+//                     }
+//                     data.save();
+//                     res.json({
+//                         message: data
+//                     })
+//                 }
+//             })
+//         }
+//     })
+// })
