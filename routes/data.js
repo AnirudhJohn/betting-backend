@@ -26,6 +26,7 @@ const isAuthenticated = (req, res, next) => {
 // GET ROUTES
 router.get('/wallet', isAuthenticated, DataController.getWallet)
 router.get('/getchild', isAuthenticated, DataController.getChild)
+router.get('/valid', isAuthenticated, DataController.valid)
 
 // POST ROUTES
 router.post('/sendmoney', isAuthenticated, DataController.sendMoney)

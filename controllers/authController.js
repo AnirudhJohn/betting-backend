@@ -77,6 +77,9 @@ const register = (req, res, next) => {
 // It requires req.body.username, req.body.password
 const login = (req, res, next) => {
 
+    console.log(req.body)
+
+
     // Get variables from request 
     let username = req.body.username;
     let password = req.body.password;
@@ -104,9 +107,8 @@ const login = (req, res, next) => {
                         let token = jwt.sign({ data }, process.env.JWT_SECRET, { expiresIn: '1h' })
 
                         // Send Response
-                        return res.json({
-                            message: 'Login Successfull ..',
-                            token: token
+                        return res.status(200).json({
+                            token
                         })
                     } else {
                         return res.json({

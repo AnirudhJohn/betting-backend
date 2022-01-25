@@ -3,6 +3,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const morgan = require('morgan')
 const jwt = require('jsonwebtoken')
+const cors = require('cors')
 
 // Importing local paths
 const authRoute = require('./routes/auth')
@@ -28,6 +29,19 @@ app.use(morgan('dev'))
 app.use(express.urlencoded())
 app.use(express.json())
 app.use('/uploads', express.static('uploads'))
+app.use(cors({
+    origin: 'http://localhost:4200'
+}))
+
+// app.use(function(req, res, next) {
+//     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200/');
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+//     res.setHeader('Access-Control-Allow-Credentials', true);
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//     next();
+// });
+
 
 // Port Variable
 const PORT = process.env.PORT || 3000
@@ -41,12 +55,28 @@ app.listen(PORT, () => {
 app.use('/api', authRoute)
 app.use('/api/data', dataRoute)
 
+// app.post('/api/login', (req, res) => {
+//     res.status(200).json({
+//         token: 'ani'
+//     })
+// })
+
 // Sample 
+
+
 app.get('/api/one', (req, res) => res.redirect(process.env.API_ONE))
 app.get('/api/two', (req, res) => res.redirect(process.env.API_TWO))
 app.get('/api/three', (req, res) => res.redirect(process.env.API_THREE))
 app.get('/api/four', (req, res) => res.redirect(process.env.API_FOUR))
 app.get('/api/five', (req, res) => res.redirect(process.env.API_FIVE))
+
+app.get('/', (req, res) => res.json({ message: 'Api working correctly' }))
+
+// app.options('/', (req, res) => {
+//     res.json({
+//         messgae: ' working corectly'
+//     })
+// })
 
 
 // API 1 : All Country List

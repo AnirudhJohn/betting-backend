@@ -8,7 +8,7 @@ const jwt_decode = require('jwt-decode')
 // Every function in this module 
 // require authentication token.
 const getWallet = (req, res, next) => {
-
+    console.log('here')
     Users.findOne({ username: req.headers.username }, (err, data) => {
 
         if (err) {
@@ -17,8 +17,12 @@ const getWallet = (req, res, next) => {
                 err
             })
         } else {
+            console.log(data)
             return res.json({
-                wallet: data.wallet
+
+                wallet: data.wallet,
+                username: data.username,
+                role: data.role
             })
         }
     })
@@ -88,7 +92,18 @@ const sendMoney = (req, res, next) => {
 const getChild = (req, res, next) => {
 
     Users.findOne({ username: req.headers.username }, (err, data) => {
+
+
         children = data['child']
+        a = JSON.stringify(children)
+        console.log(typeof children, typeof a)
+        console.log(a)
+        console.log(children)
+        for (const child in children) {
+            console.log(`${child} : ${children[child]}`)
+        }
+
+
         console.log(children)
         return res.json({
             children
@@ -96,9 +111,13 @@ const getChild = (req, res, next) => {
     })
 }
 
+const valid = (req, res, next) => {
+    return res.send
+}
 
 module.exports = {
     getWallet,
     sendMoney,
-    getChild
+    getChild,
+    valid
 }
