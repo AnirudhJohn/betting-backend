@@ -97,52 +97,21 @@ const sendMoney = (req, res, next) => {
 
 
 }
-let money = []
 
 const getChild = (req, res, next) => {
-    money = []
+
 
     Users.findOne({ username: req.headers.username }, (err, data) => {
 
-        console.log(data)
-        children = data['child']
-        parent = data['parent']
 
-        if (children === null) {
-            console.log('i am here');
-            return res.json({
-                message: 'no children'
-            })
-        } else {
-            if (req.headers.role === 'creator') {
-
-                console.log('children', children)
-                console.log('money', money)
-                return res.json({
-                    data
-
-                })
-            } else if (req.headers.role === 'user') {
-                console.log('i am here');
-                return res.json({
-                    children: data['parent']
-                })
-
-            } else {
-                console.log('i am here');
-                return res.json({
-                    children,
-                    parent
-                })
-            }
-        }
-
-
+        return res.json({
+            data
+        })
     })
 }
 
 const getchilddata = (req, res, next) => {
-    console.log(req.body)
+
     Users.findOne({ username: req.body.username }, (err, data) => {
         if (err) {
             res.sendStatus(500)
@@ -158,11 +127,8 @@ const removeuser = (req, res, next) => {
 
     Users.findOne({ username: req.headers.username }, (err, data) => {
         if (err) {
-            console.log('in err', err)
-            console.log('i am here');
             return res.sendStatus(500)
         } else {
-            console.log('old data', data['child'])
             children = data['child']
             if (children.indexOf(req.body.username) === -1) {
                 console.log('no parent found')
@@ -170,29 +136,22 @@ const removeuser = (req, res, next) => {
 
                 children.splice(children.indexOf(req.body.username), 1)
             }
-            console.log('new data', children)
             data['child'] = children
             data.save()
 
-            console.log('i am here');
             return res.sendStatus(200)
         }
     })
     Users.findOne({ username: req.body.username }, (err, data) => {
         if (err) {
-            console.log(err)
-            console.log('i am here');
             return res.sendStatus(404)
         } else {
 
             Users.findOneAndDelete({ username: req.body.username }, (err, data) => {
                 if (err) {
-                    console.log('haan me error hu')
-                    console.log(err)
-
-                    res.sen(403)
+                    res.sendStatus(403)
                 } else {
-                    console.log(req.body)
+
                     console.log('User deleted !!')
 
                 }
@@ -204,7 +163,6 @@ const removeuser = (req, res, next) => {
 
 const valid = (req, res, next) => {
     if (!req.headers['authorization']) {
-        console.log('i am here');
         return res.sendStatus(403)
     } else {
         token = req.headers['authorization'].split(' ')[1]
@@ -224,7 +182,6 @@ const genCoin = (req, res, next) => {
     if (req.headers.role === 'creator') {
         Users.findOne({ username: req.headers.username }, (err, data) => {
             if (err) {
-                console.log('i am here');
                 return res.sendStatus(500)
             } else {
                 data['wallet'] = data['wallet'] + req.body['ammount']
@@ -235,12 +192,10 @@ const genCoin = (req, res, next) => {
                     amount: req.body['ammount']
                 })
                 token.save();
-                console.log('i am here');
                 return res.sendStatus(200)
             }
         })
     } else {
-        console.log('i am here');
         return res.sendStatus(403)
     }
 }
@@ -250,30 +205,31 @@ const transfer = (req, res, next) => {
     const amount = req.body['amount']['amount']
 
     Users.findOne({ username: sender }, (err, data) => {
-        if (data['wallet'] < amount) {
-            res.sendStatus(403)
-        }
+
 
         children = data['child']
         if (children === null) {
-            console.log('i am here');
+
             return res.json({
                 message: 'no children'
             })
+
         } else {
             if (data['child'].includes(recevier) || data['parent'] === recevier) {
+                // Find reciever
                 Users.findOne({ username: recevier }, (err, rdata) => {
                     if (err) {
-                        console.log('i am here');
+
                         return res.sendStatus(500)
                     } else {
                         if (amount < data['wallet']) {
-                            console.log(rdata['wallet'], data['wallet'], amount)
+
                             rdata['wallet'] += amount;
                             data['wallet'] -= amount
-                            console.log(rdata['wallet'], data['wallet'], amount)
+
                             data.save()
                             rdata.save()
+
                             let transaction = new Transaction({
                                 sender: data['username'],
                                 receiver: rdata['username'],
@@ -283,8 +239,6 @@ const transfer = (req, res, next) => {
                             transaction.save();
 
                         } else {
-                            console.log('i am here');
-                            console.log('i am here');
                             return res.sendStatus(403)
                         }
                     }
@@ -296,16 +250,13 @@ const transfer = (req, res, next) => {
 
     })
 
-
-    console.log('send ' + amount + ' from ' + sender + ' to ' + recevier)
-
-    console.log('i am here');
     return res.sendStatus(200)
 }
 
 const getTransactions = (req, res, next) => {
-    console.log('hii')
+
     const username = req.headers.username
+
     Transaction.find({ sender: username }, (err, data) => {
         if (err) {
             console.log('i am here');
@@ -330,6 +281,22 @@ const isvaliduser = (req, res, next) => {
 
 }
 
+const block = (req, res, next) => {
+    console.log(req.body.username)
+    let username = req.body.username
+    Users.findOne({ username: username }, (err, data) => {
+        if (err) {
+            res.sendStatus(500)
+            console.log(' in block user error ' + err)
+        } else {
+            console.log('changing ' + data.isActive + ' for user ' + data.username + ' to ' + !data.isActive)
+            data.isActive = !data.isActive
+            data.save()
+            return res.sendStatus(200)
+        }
+    })
+}
+
 const one = (req, res, next) => {
     requests(process.env.API_ONE, (err, response, body) => {
         console.log(err, body, response)
@@ -349,6 +316,7 @@ module.exports = {
     getTransactions,
     isvaliduser,
     getchilddata,
+    block,
     one
 }
 

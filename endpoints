@@ -1,0 +1,19 @@
+/api
+    /
+  post  /register  => register => register a user  =>
+  post  /login =>   login => gen token for user =>
+
+/api/data
+   get /wallet => getWallet  => send username, wallet, and role =>
+   get /getchild => getChild  => send whole user data for the login user =>
+   get /valid => valid  => send true or false depending if thier token is valid  =>
+   get /gettrans => getTransactions  => query a transaction =>
+   get /isvaliduser => isvaliduser  =>  returns true or false, if user is blocked or not =>
+    
+   get /one =>   => =>
+
+   post /sendmoney => sendMoney  => not in use  =>
+   post /removeuser => removeuser  => it removes a user from child array and then deletes the user =>
+   post /gencoin => genCoin  => Generates Coin and logs the entry =>
+   post /transfer => transfer  => transfer money from one account to another with appropritae relationship =>
+   post /getchilddata => getchilddata  => get whole data for requested user by body =>

@@ -41,4 +41,7 @@ router.post('/transfer', isAuthenticated, DataController.transfer)
 router.post('/getchilddata', isAuthenticated, DataController.getchilddata)
 
 
+router.put('/block', isAuthenticated, DataController.block)
+
+
 module.exports = router
