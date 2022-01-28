@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-
+const isAuthenticated = require('./data')
 const AuthController = require('../controllers/authController')
 
 router.get('/', (req, res) => res.json({

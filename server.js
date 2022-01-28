@@ -30,7 +30,7 @@ app.use(express.urlencoded())
 app.use(express.json())
 app.use('/uploads', express.static('uploads'))
 app.use(cors({
-    origin: 'http://localhost:4200'
+    origin: '*'
 }))
 
 // app.use(function(req, res, next) {

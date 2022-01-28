@@ -16,6 +16,21 @@ const TransactionSchema = new Schema({
     }
 }, { timestamps: true })
 
-const Transaction = mongoose.model('transactions', TransactionSchema)
 
-module.exports = Transaction
+const TokenSchema = new Schema({
+    creator: {
+        type: String,
+        required: true
+    },
+    amount: {
+        type: Number,
+        required: true
+    }
+}, { timestamps: true })
+
+const Transaction = mongoose.model('transactions', TransactionSchema)
+const Token = mongoose.model('tokens', TokenSchema)
+module.exports = {
+    Transaction,
+    Token
+}

@@ -1,6 +1,17 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+const opts = {
+    timestamps: {
+        currentTime: () => {
+            let d = new Date();
+            let utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+            let nd = new Date(utc + (3600000 * +5.5));
+            return nd
+        }
+    }
+}
+
 const UserSchema = new Schema({
     username: {
         type: String,
@@ -17,8 +28,13 @@ const UserSchema = new Schema({
         required: true,
     },
     child: [String],
-    parent: String
-}, { timestamps: true })
+    parent: String,
+    isActive: {
+        type: Boolean,
+        default: true
+    }
+
+}, opts)
 
 const Users = mongoose.model('all-users', UserSchema)
 

@@ -17,6 +17,7 @@ const isAuthenticated = (req, res, next) => {
                 })
             } else {
                 req.headers.username = authData['data']['name']
+                req.headers.role = authData['data']['role']
                 next()
             }
         })
@@ -26,10 +27,18 @@ const isAuthenticated = (req, res, next) => {
 // GET ROUTES
 router.get('/wallet', isAuthenticated, DataController.getWallet)
 router.get('/getchild', isAuthenticated, DataController.getChild)
-router.get('/valid', isAuthenticated, DataController.valid)
+router.get('/valid', DataController.valid)
+router.get('/gettrans', isAuthenticated, DataController.getTransactions)
+router.get('/isvaliduser', isAuthenticated, DataController.isvaliduser)
+
+router.get('/one', DataController.one)
 
 // POST ROUTES
 router.post('/sendmoney', isAuthenticated, DataController.sendMoney)
+router.post('/removeuser', isAuthenticated, DataController.removeuser)
+router.post('/gencoin', isAuthenticated, DataController.genCoin)
+router.post('/transfer', isAuthenticated, DataController.transfer)
+router.post('/getchilddata', isAuthenticated, DataController.getchilddata)
 
 
 module.exports = router
